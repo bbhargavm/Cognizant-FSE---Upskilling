@@ -164,6 +164,23 @@
         .help-link:hover {
             background-color: #d5dbdb;
         }
+
+        #welcomeBanner {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin: 1.5rem auto;
+            max-width: 1200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+        }
+
+        .highlight {
+            background-color: rgba(255, 235, 59, 0.18);
+            border-left: 4px solid #f1c40f;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+        }
         
         /* Feature Boxes */
         .feature-box {
@@ -286,6 +303,10 @@
         <p>Your gateway to local events, services, and community updates</p>
     </header>
 
+    <div id="welcomeBanner">
+        <p class="highlight">Welcome back, <strong>Jamie</strong>! <span style="color: red; font-weight: bold;">Special offer: 20% off premium event access today only!</span></p>
+    </div>
+
     <!-- Main Content Section -->
     <main role="main">
         <!-- Events Section -->
@@ -310,7 +331,7 @@
                 </a>
                 (Opens in a new window)
             </p>
-            <p><em>Event listings with filters and search functionality will be displayed here.</em></p>
+            <p class="highlight"><em>Event listings with filters and search functionality will be displayed here.</em></p>
         </section>
 
         <!-- Registration Section -->
