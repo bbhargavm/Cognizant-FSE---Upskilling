@@ -454,6 +454,87 @@
         .output-container.show output {
             animation: slideIn 0.3s ease;
         }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-header p {
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .nav-link-button {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .nav-link-button:hover,
+        .nav-link-button:focus {
+            background-color: #3498db;
+            outline: 2px solid #2980b9;
+        }
+
+        .event-register-link {
+            cursor: pointer;
+            color: #e74c3c;
+            font-weight: bold;
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        .register-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-close-btn {
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            transition: color 0.2s ease;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close-btn:hover {
+            color: #2c3e50;
+        }
         
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -496,12 +577,12 @@
 </head>
 <body>
     <!-- Registration Modal -->
-    <div class="modal-overlay" id="registrationModal">
+    <div class="modal-overlay" id="registrationModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-container">
-            <button class="modal-close" id="closeModal">&times;</button>
-            <header style="text-align: center; margin-bottom: 2rem;">
-                <h1 style="font-size: 1.8rem; color: #2c3e50;">Event Registration Form</h1>
-                <p style="color: #7f8c8d; margin-top: 0.5rem;">Join us for an exciting community event</p>
+            <button class="modal-close-btn" id="closeModal" aria-label="Close registration form">&times;</button>
+            <header class="modal-header">
+                <h1 id="modalTitle">Event Registration Form</h1>
+                <p>Join us for an exciting community event</p>
             </header>
 
             <form id="eventForm" novalidate>
@@ -613,7 +694,7 @@
             <ul>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#events" id="eventsLink">Events</a></li>
-                <li><a id="registerLink" style="cursor: pointer;">Register</a></li>
+                <li><button class="nav-link-button" id="registerLink" aria-label="Open event registration form">Register</button></li>
                 <li><a href="#locations">Locations</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -645,9 +726,9 @@
 
             <p>
                 <strong>Ready to register?</strong> 
-                <a id="eventRegisterLink" style="cursor: pointer; color: #e74c3c; font-weight: bold;">
+                <button id="eventRegisterLink" class="event-register-link" aria-label="Click to register for an event">
                     Click here to register for an event
-                </a>
+                </button>
             </p>
             <p><em>Event listings with filters and search functionality will be displayed here.</em></p>
         </section>
@@ -669,7 +750,7 @@
 
             <p>
                 <strong>Ready to get started?</strong> 
-                <button onclick="document.getElementById('registerLink').click()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
+                <button class="register-btn" id="openRegisterBtn" aria-label="Open the registration form">
                     Open Registration Form
                 </button>
             </p>
@@ -714,6 +795,7 @@
         const registerLink = document.getElementById('registerLink');
         const closeModal = document.getElementById('closeModal');
         const eventRegisterLink = document.getElementById('eventRegisterLink');
+        const openRegisterBtn = document.getElementById('openRegisterBtn');
         const form = document.getElementById('eventForm');
         const outputContainer = document.getElementById('outputContainer');
         const confirmationOutput = document.getElementById('confirmationOutput');
@@ -726,6 +808,11 @@
         });
 
         eventRegisterLink.addEventListener('click', () => {
+            modal.classList.add('active');
+            document.getElementById('name').focus();
+        });
+
+        openRegisterBtn.addEventListener('click', () => {
             modal.classList.add('active');
             document.getElementById('name').focus();
         });
