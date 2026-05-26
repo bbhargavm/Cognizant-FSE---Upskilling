@@ -677,6 +677,39 @@
         }
 
 
+        .input-error {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+        }
+
+        .submission-note {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            min-height: 1.25rem;
+        }
+
+        .event-image-wrapper {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .event-image {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+            cursor: zoom-in;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+        }
+
+        .event-image.enlarged {
+            transform: scale(1.05);
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+            cursor: zoom-out;
+        }
+
+
 
         select {
 
@@ -1234,6 +1267,36 @@
 
                     </div>
 
+                    <div class="form-group">
+
+                        <label for="phone">
+
+                            Phone Number
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input 
+
+                            type="tel" 
+
+                            id="phone" 
+
+                            name="phone" 
+
+                            placeholder="(555) 123-4567"
+
+                            required
+
+                            onblur="validatePhone()"
+
+                        >
+
+                        <p class="helper-text" id="phoneError">Enter your contact number for urgent updates.</p>
+
+                    </div>
+
                 </div>
 
 
@@ -1286,6 +1349,8 @@
 
                             required
 
+                            onchange="updateEventFee()"
+
                         >
 
                             <option value="">-- Select an event type --</option>
@@ -1307,6 +1372,7 @@
                         </select>
 
                         <p class="helper-text">Choose the type of event</p>
+                        <p class="helper-text"><strong>Event fee:</strong> <span id="eventFee">Select an event type</span></p>
 
                     </div>
 
@@ -1334,9 +1400,15 @@
 
                         required
 
+                        onkeydown="updateFeedbackCount(event)"
+
+                        onkeyup="updateFeedbackCount(event)"
+
                     ></textarea>
 
                     <p class="helper-text">Share any additional information (minimum 10 characters)</p>
+                    <p class="helper-text">Character count: <span id="feedbackCount">0</span></p>
+                    <p class="helper-text">Last key pressed: <span id="lastKey">None</span></p>
 
                 </div>
 
@@ -1344,9 +1416,19 @@
 
                 <div class="button-group">
 
-                    <button type="submit">Register for Event</button>
+                    <button type="submit" onclick="showSubmitConfirmation(event)">Register for Event</button>
 
                     <button type="reset">Clear Form</button>
+
+                </div>
+
+                <p class="submission-note" id="submitNotice"></p>
+
+                <div class="event-image-wrapper">
+
+                    <img id="eventImage" src="https://via.placeholder.com/640x360.png?text=Community+Event+Poster" alt="Community event poster" class="event-image" ondblclick="toggleImageSize()" tabindex="0">
+
+                    <p class="helper-text">Double-click the image to enlarge it.</p>
 
                 </div>
 
@@ -1602,6 +1684,14 @@
 
         const confirmationText = document.getElementById('confirmationText');
 
+        const phoneInput = document.getElementById('phone');
+        const phoneError = document.getElementById('phoneError');
+        const eventFeeDisplay = document.getElementById('eventFee');
+        const submitNotice = document.getElementById('submitNotice');
+        const feedbackCount = document.getElementById('feedbackCount');
+        const lastKey = document.getElementById('lastKey');
+        const eventImage = document.getElementById('eventImage');
+
 
 
         // Open modal
@@ -1787,6 +1877,50 @@
         });
 
 
+
+        function validatePhone() {
+
+            const phoneValue = phoneInput.value.trim();
+            const phoneRegex = /^\+?[0-9\s-()]{7,20}$/;
+
+            if (!phoneRegex.test(phoneValue)) {
+                phoneError.textContent = 'Please enter a valid phone number.';
+                phoneInput.classList.add('input-error');
+                phoneInput.setCustomValidity('Invalid phone number');
+            } else {
+                phoneError.textContent = 'Enter your contact number for urgent updates.';
+                phoneInput.classList.remove('input-error');
+                phoneInput.setCustomValidity('');
+            }
+        }
+
+        function updateEventFee() {
+            const fees = {
+                workshop: '$25',
+                seminar: '$40',
+                networking: '$10',
+                conference: '$70',
+                social: '$15',
+                training: '$35',
+                webinar: 'Free'
+            };
+            const selectedValue = document.getElementById('eventType').value;
+            eventFeeDisplay.textContent = selectedValue ? fees[selectedValue] : 'Select an event type';
+        }
+
+        function showSubmitConfirmation(e) {
+            submitNotice.textContent = 'Preparing to submit your registration...';
+        }
+
+        function toggleImageSize() {
+            eventImage.classList.toggle('enlarged');
+        }
+
+        function updateFeedbackCount(e) {
+            const currentLength = document.getElementById('message').value.length;
+            feedbackCount.textContent = currentLength;
+            lastKey.textContent = e.key || 'Unknown';
+        }
 
         function escapeHtml(text) {
 
