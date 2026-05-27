@@ -23,6 +23,27 @@ const modal = document.getElementById('registrationModal');
         const feedbackCount = document.getElementById('feedbackCount');
         const lastKey = document.getElementById('lastKey');
         const eventImage = document.getElementById('eventImage');
+        const clearPreferencesBtn = document.getElementById('clearPreferencesBtn');
+        const preferredEventTypeKey = 'preferredEventType';
+
+        function savePreferredEventType(value) {
+            localStorage.setItem(preferredEventTypeKey, value);
+            sessionStorage.setItem(preferredEventTypeKey, value);
+        }
+
+        function loadPreferredEventType() {
+            return localStorage.getItem(preferredEventTypeKey)
+                || sessionStorage.getItem(preferredEventTypeKey)
+                || '';
+        }
+
+        function clearSavedPreferences() {
+            localStorage.removeItem(preferredEventTypeKey);
+            sessionStorage.removeItem(preferredEventTypeKey);
+            document.getElementById('eventType').value = '';
+            updateEventFee();
+            submitNotice.textContent = 'Preferences cleared.';
+        }
 
 
 
@@ -240,6 +261,15 @@ const modal = document.getElementById('registrationModal');
             eventFeeDisplay.textContent = selectedValue ? fees[selectedValue] : 'Select an event type';
         }
 
+        document.getElementById('eventType').addEventListener('change', (event) => {
+            updateEventFee();
+            savePreferredEventType(event.target.value);
+        });
+
+        clearPreferencesBtn.addEventListener('click', () => {
+            clearSavedPreferences();
+        });
+
         function showSubmitConfirmation(e) {
             submitNotice.textContent = 'Preparing to submit your registration...';
         }
@@ -277,6 +307,14 @@ const modal = document.getElementById('registrationModal');
 
 
         // Focus on first field on page load
+
+        const savedEventType = loadPreferredEventType();
+        if (savedEventType) {
+            document.getElementById('eventType').value = savedEventType;
+            updateEventFee();
+        } else {
+            updateEventFee();
+        }
 
         document.getElementById('name').focus();
 
