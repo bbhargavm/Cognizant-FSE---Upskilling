@@ -25,6 +25,8 @@ const modal = document.getElementById('registrationModal');
         const eventImage = document.getElementById('eventImage');
         const clearPreferencesBtn = document.getElementById('clearPreferencesBtn');
         const preferredEventTypeKey = 'preferredEventType';
+        const findNearbyBtn = document.getElementById('findNearbyBtn');
+        const locationOutput = document.getElementById('locationOutput');
 
         function savePreferredEventType(value) {
             localStorage.setItem(preferredEventTypeKey, value);
@@ -283,6 +285,85 @@ const modal = document.getElementById('registrationModal');
             feedbackCount.textContent = currentLength;
             lastKey.textContent = e.key || 'Unknown';
         }
+
+        function showLocationMessage(message, isError = false) {
+            locationOutput.textContent = message;
+            locationOutput.classList.toggle('error', isError);
+            locationOutput.classList.add('visible');
+        }
+
+        function showLocationError(message) {
+            showLocationMessage(`❌ ${message}`, true);
+        }
+
+        function findNearestEvent(lat, lng) {
+            const events = [
+                { name: 'Crafts & Coffee Workshop', venue: 'Community Center', lat: 40.741, lng: -73.989, date: 'June 5, 2026' },
+                { name: 'Outdoor Yoga Meetup', venue: 'Riverfront Park', lat: 40.748, lng: -73.984, date: 'June 7, 2026' },
+                { name: 'Local Music Showcase', venue: 'Town Hall', lat: 40.735, lng: -73.995, date: 'June 12, 2026' }
+            ];
+
+            const deg2rad = (deg) => deg * Math.PI / 180;
+            const getDistance = (lat1, lng1, lat2, lng2) => {
+                const R = 6371;
+                const dLat = deg2rad(lat2 - lat1);
+                const dLon = deg2rad(lng2 - lng1);
+                const a = Math.sin(dLat / 2) ** 2 + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) ** 2;
+                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            };
+
+            let nearest = null;
+            for (const event of events) {
+                const distance = getDistance(lat, lng, event.lat, event.lng);
+                if (!nearest || distance < nearest.distance) {
+                    nearest = { ...event, distance };
+                }
+            }
+            return nearest;
+        }
+
+        function handleLocationSuccess(position) {
+            const { latitude, longitude } = position.coords;
+            const nearestEvent = findNearestEvent(latitude, longitude);
+
+            if (!nearestEvent) {
+                showLocationError('No nearby events are currently available.');
+                return;
+            }
+
+            locationOutput.innerHTML = `
+                <p><strong>Your coordinates:</strong> ${latitude.toFixed(5)}, ${longitude.toFixed(5)}</p>
+                <p><strong>Nearest event:</strong> ${nearestEvent.name}</p>
+                <p><strong>Venue:</strong> ${nearestEvent.venue}</p>
+                <p><strong>Date:</strong> ${nearestEvent.date}</p>
+                <p><strong>Distance:</strong> ${nearestEvent.distance.toFixed(1)} km away</p>
+            `;
+            locationOutput.classList.remove('error');
+            locationOutput.classList.add('visible');
+        }
+
+        function handleLocationError(error) {
+            const errorMessages = {
+                [error.PERMISSION_DENIED]: 'Permission denied. Allow location access to find the nearest event.',
+                [error.POSITION_UNAVAILABLE]: 'Your location is unavailable. Check your device settings and try again.',
+                [error.TIMEOUT]: 'Location request timed out. Please try again and allow location access.'
+            };
+            showLocationError(errorMessages[error.code] || 'Unable to retrieve your location. Please try again.');
+        }
+
+        findNearbyBtn?.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                showLocationError('Geolocation is not supported by this browser.');
+                return;
+            }
+
+            showLocationMessage('Locating nearby events…');
+            navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+        });
 
         function escapeHtml(text) {
 
